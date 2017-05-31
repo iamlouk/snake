@@ -1,0 +1,21 @@
+{
+  "name": "screen-snake",
+  "productName": "ScreenSnake",
+  "version": "0.0.1",
+  "description": "play snake in a transparent window",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "keywords": [
+    "snake",
+    "electron",
+    "game"
+  ],
+  "author": "Lou Knauer <lou.knauer98@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^1.6.10"
+  }
+}
