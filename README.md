@@ -10,5 +10,9 @@ make
 cd electron/
 npm start
 
+# Rust:
+cd rust/
+cargo run
+
 ```
 
