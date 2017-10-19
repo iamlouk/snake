@@ -17,6 +17,15 @@ const (
     BoxDrawingVertical = "║"
 )
 
+func TermBlue(s string) string { return fmt.Sprintf("\x1B[34m%s\x1B[0m", s) }
+
+func TermRed(s string) string { return fmt.Sprintf("\x1B[31m%s\x1B[0m", s) }
+
+func TermYellow(s string) string { return fmt.Sprintf("\x1B[33m%s\x1B[0m", s) }
+
+func TermGoTo(x, y int) { fmt.Printf("\033[%d;%dH", y, x) }
+
+
 var width, height int
 
 type Vec struct {
@@ -86,7 +95,7 @@ func (snake *Snake) Len() int {
 }
 
 func DrawBorder() {
-    TermClear()
+    fmt.Print("\033[2J")
     TermGoTo(0, 0)
     fmt.Print(BoxDrawingCornerTopLeft)
     for i := 1; i < width - 1; i++ {
@@ -142,16 +151,13 @@ func RandomPos() Vec {
 }
 
 func main() {
-    w, h, ok := TermGetSize()
-    width = w
-    height = h
-    if !ok {
-        fmt.Fprintf(os.Stderr, "stdin isn't a terminal or some other error ocured\n")
-        os.Exit(1)
-    }
-    // fmt.Printf("%d x %d\n", width, height)
     if err := termbox.Init(); err != nil {
         panic(err)
+    }
+    width, height = termbox.Size()
+    if width < 15 || height < 15 {
+        fmt.Fprintf(os.Stderr, "terminal too small\n")
+        os.Exit(1)
     }
     DrawBorder()
 
@@ -231,20 +237,25 @@ func main() {
             }
         }
 
-
         TermGoTo(sec.Pos.X, sec.Pos.Y)
         fmt.Print(TermRed("█"))
 
 
         select {
         case dir := <-dirchan:
-            snake.Direction = dir
+            if snake.Direction.X != 0 || snake.Direction.Y != 0 {
+                if dir.X != -snake.Direction.X && dir.Y != -snake.Direction.Y {
+                    snake.Direction = dir
+                }
+            } else {
+               snake.Direction = dir
+            }
         case <-quitchan:
             break mainloop
         default:
         }
 
-        time.Sleep(100 * time.Millisecond)
+        time.Sleep(75 * time.Millisecond)
     }
     termbox.Close()
     fmt.Printf("Score: %d\n", snake.Len())
